@@ -1,40 +1,76 @@
 # Python - Gunicorn Server Setup
 
+## Update server
+
 ```bash
 sudo apt update
 sudo apt upgrade
-
-adduser ishtiyaq
-usermod -aG sudo ishtiyaq
-
-sudo apt install python python3-pip
 ```
+
+## Create new user
+
+```bash
+adduser ishtiyaq
+```
+
+## Add user to sudors list
+
+```bash
+usermod -aG sudo ishtiyaq
+```
+
+## Install python and pip
+
+```bash
+sudo apt install python3 python3-pip
+```
+
+## Copy project code to the server
 
 ```bash
 git clone https://github.com/egorsmkv/simple-django-login-and-register.git mysite
-cd mysite
-pip3 install pipenv
 
+cd mysite
+```
+## Install and setup pipenv
+
+```bash
+pip3 install pipenv
+```
+
+```bash
 vi ~/.bashrc
+```
+
+```bash
 PYTHON_BIN_PATH="$(python3 -m site --user-base)/bin"
 PATH="$PATH:$PYTHON_BIN_PATH"
+```
 
+```bash
 pipenv install
 pipenv shell
 pipenv install django
 pipenv install gunicorn
+```
 
+```bash
 python source/manage.py migrate
 python source/manage.py collectstatic --no-input
-
-cd source
-gunicorn --bind 0.0.0.0:8000 app.wsgi:application
 ```
 
 ```bash
 vi app/conf/development/settings.py
 
 allowed_host=['*']
+```
+
+## Run gunicorn service to test the server
+
+```bash
+cd source
+
+gunicorn --bind 0.0.0.0:8000 app.wsgi:application
 ```
 
 ## Nginx server setup
@@ -61,10 +97,19 @@ server{
 }
 ```
 
+### Test nginx configuration
+
 ```bash
 sudo nginx -t
+```
+
+### Restart nginx server
+
+```bash
 sudo systemctl restart nginx
 ```
+
+### Run gunicorn server to test the deployment
 
 ```bash
 gunicorn --workers 3 --bind unix:/home/ishtiyaq/mysite/source/app.sock app.wsgi:application
